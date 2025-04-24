@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import projects.defaultProject.nodes.timers.MessageTimer;
 import projects.flowupdatingpairwise.nodes.messages.FlowUpdatingPairwiseMsg;
+import projects.flowupdatingpairwise.nodes.timers.TickTimer;
 import projects.flowupdatingsync.nodes.messages.FlowUpdatingSyncMsg;
 import sinalgo.exception.WrongConfigurationException;
 import sinalgo.gui.transformation.PositionTransformation;
@@ -55,6 +56,7 @@ public class FlowUpdatingPairwiseNode extends Node {
         double estimate = this.value - flowsSum;
 
         double avg = (this.neighborsEstimates.getOrDefault(node.getID(), 0.0) + estimate) / 2.0;
+
         this.lastAverage = avg;
 
         this.flows.put(
@@ -74,7 +76,7 @@ public class FlowUpdatingPairwiseNode extends Node {
         this.send(msg, node);
     }
 
-    private void tick() {
+    public void tick() {
         for (FlowUpdatingPairwiseNode neigh : getFlowUpdatingPairwiseNodeNeighbors()) {
             this.ticksSinceLastAvg.put(neigh.getID(), this.ticksSinceLastAvg.getOrDefault(neigh.getID(), 0) + 1);
 
@@ -111,18 +113,11 @@ public class FlowUpdatingPairwiseNode extends Node {
     public void init() {
         // initialize the node
         this.value = new Random().nextInt(40) + 10;
+        new TickTimer(10.0, this);
     }
 
     @Override
     public void neighborhoodChange() {
-    }
-
-    @NodePopupMethod(menuText = "Start")
-    public void start() {
-        for (FlowUpdatingPairwiseNode neighbor : getFlowUpdatingPairwiseNodeNeighbors()) {
-            MessageTimer msgTimer = new MessageTimer(new FlowUpdatingPairwiseMsg(this, 0.0, this.value)); // broadcast
-            msgTimer.startRelative(1, neighbor);
-        }
     }
 
     @Override
