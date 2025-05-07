@@ -7,26 +7,24 @@ import projects.flowupdatingpairwise.nodes.nodeImplementations.FlowUpdatingPairw
 import sinalgo.nodes.timers.Timer;
 
 /**
- * A timer to call the tick method.
+ * A timer to call the start method.
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
-public class TickTimer extends Timer {
+public class StartTimer extends Timer {
 
     private FlowUpdatingPairwiseNode node;
-    private double interval;
+    private double delay;
 
     // Starts by itself when instantiated
-    public TickTimer(double interval, FlowUpdatingPairwiseNode receiver) {
-        this.setInterval(interval);
+    public StartTimer(double delay, FlowUpdatingPairwiseNode receiver) {
+        this.setDelay(delay);
         this.setNode(receiver);
-        this.startRelative(this.getInterval(), this.getNode());
+        this.startRelative(this.getDelay(), this.getNode());
     }
 
     @Override
     public void fire() {
-        this.getNode().tick();
-        new TickTimer(this.getInterval(), this.getNode());
+        this.getNode().start();
     }
-
 }

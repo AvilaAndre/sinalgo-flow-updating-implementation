@@ -95,7 +95,7 @@ public class CustomGlobal extends AbstractCustomGlobal {
                 ? valuesTotal / nValues
                 : 0.0;
 
-        JOptionPane.showMessageDialog(null, "The average value of all the " + nValues + " nodes is "
+        JOptionPane.showMessageDialog(null, "The average value of all the " + nValues + " FlowUpdatingPairwiseNode nodes is "
                 + Double.parseDouble(new DecimalFormat("##.##").format(valuesAvg)) + ".");
     }
 }

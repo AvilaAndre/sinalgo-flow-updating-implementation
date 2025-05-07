@@ -2,16 +2,16 @@ package projects.flowupdatingpairwise.nodes.nodeImplementations;
 
 import lombok.Getter;
 import lombok.Setter;
-import projects.defaultProject.nodes.timers.MessageTimer;
 import projects.flowupdatingpairwise.nodes.messages.FlowUpdatingPairwiseMsg;
+import projects.flowupdatingpairwise.nodes.timers.StartTimer;
 import projects.flowupdatingpairwise.nodes.timers.TickTimer;
-import projects.flowupdatingsync.nodes.messages.FlowUpdatingSyncMsg;
 import sinalgo.exception.WrongConfigurationException;
 import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
 import sinalgo.nodes.edges.Edge;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.nodes.messages.Message;
+import sinalgo.runtime.Global;
 import sinalgo.tools.logging.Logging;
 
 import java.awt.*;
@@ -114,6 +114,21 @@ public class FlowUpdatingPairwiseNode extends Node {
         // initialize the node
         this.value = new Random().nextInt(40) + 10;
         new TickTimer(10.0, this);
+
+        // An asynchornous simulation requires events
+        // to start, so sending messages right away will
+        // not work.
+        if (Global.isAsynchronousMode()) {
+            new StartTimer(0.1, this);
+        } else {
+            start();
+        }
+    }
+
+    public void start() {
+        for (FlowUpdatingPairwiseNode neigh : getFlowUpdatingPairwiseNodeNeighbors()) {
+            this.send(new FlowUpdatingPairwiseMsg(this, 0, this.value), neigh);
+        }
     }
 
     @Override
